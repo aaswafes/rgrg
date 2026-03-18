@@ -4015,13 +4015,25 @@ async function _processTelegramData(telegramData, msgId) {
         });
         const result = await res.json();
         if (result.error) { _authMsg(msgId, '❌ ' + result.error); return; }
-        const { data, error: authErr } = await _supabase.auth.setSession({
+        if (!result.access_token) { _authMsg(msgId, '❌ No session returned. Try again.'); return; }
+
+        // Set the session directly on the supabase client
+        const { data, error: sessionErr } = await _supabase.auth.setSession({
             access_token: result.access_token,
             refresh_token: result.refresh_token
         });
-        if (authErr) { _authMsg(msgId, '❌ ' + authErr.message); return; }
-        if (data?.session?.user) await _handleOAuthSession(data.session);
+
+        if (sessionErr) { _authMsg(msgId, '❌ ' + sessionErr.message); return; }
+
+        // Manually trigger the sign-in flow if session exists
+        const session = data?.session || await _supabase.auth.getSession().then(r => r.data?.session);
+        if (session?.user) {
+            await _handleOAuthSession(session);
+        } else {
+            _authMsg(msgId, '❌ Could not establish session. Please try again.');
+        }
     } catch(e) {
+        console.error('Telegram auth error:', e);
         _authMsg(msgId, '❌ Connection error. Please try again.');
     }
 }
