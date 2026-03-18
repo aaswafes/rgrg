@@ -4015,9 +4015,9 @@ async function _processTelegramData(telegramData, msgId) {
         });
         const result = await res.json();
         if (result.error) { _authMsg(msgId, '❌ ' + result.error); return; }
-        const { data, error: authErr } = await _supabase.auth.verifyOtp({
-            token_hash: result.token,
-            type: 'magiclink'
+        const { data, error: authErr } = await _supabase.auth.setSession({
+            access_token: result.access_token,
+            refresh_token: result.refresh_token
         });
         if (authErr) { _authMsg(msgId, '❌ ' + authErr.message); return; }
         if (data?.session?.user) await _handleOAuthSession(data.session);
