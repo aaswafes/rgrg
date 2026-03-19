@@ -1217,6 +1217,54 @@
         .auth-dropdown-item:hover{background:rgba(99,102,241,0.08)}
         .auth-dropdown-item.danger{color:#ef4444}
         .auth-dropdown-item.danger:hover{background:rgba(239,68,68,0.08)}
+
+        /* ── Destructive Sign-Out Button ── */
+        .destructive-btn {
+            display: flex; align-items: center; gap: 9px;
+            padding: 10px 14px; border-radius: 12px; width: 100%;
+            background: none; border: none; cursor: pointer;
+            font-family: inherit; font-size: .85rem;
+            color: var(--text2);
+            transition: color .3s ease;
+        }
+        .destructive-btn:hover { color: #ef4444; background: rgba(239,68,68,0.06); }
+        .destructive-btn:active { transform: scale(0.98); }
+        .destructive-btn-inner {
+            position: relative; display: inline-flex; flex-direction: column;
+            align-items: flex-start; gap: 3px;
+        }
+        .destructive-btn-text {
+            position: relative; z-index: 1; display: inline-block;
+            transition: letter-spacing .3s cubic-bezier(.23,1,.32,1);
+        }
+        .destructive-btn:hover .destructive-btn-text {
+            letter-spacing: 0.02em;
+            animation: dBtn-shake .15s linear 2;
+        }
+        @keyframes dBtn-shake {
+            0%   { transform: translateX(0); }
+            25%  { transform: translateX(-1.5px); }
+            75%  { transform: translateX(1.5px); }
+            100% { transform: translateX(0); }
+        }
+        .destructive-btn-line {
+            position: relative; width: 100%; height: 1px; overflow: visible;
+        }
+        .destructive-btn-line-base {
+            position: absolute; inset: 0;
+            background: var(--text3); opacity: .35;
+        }
+        .destructive-btn-line-red {
+            position: absolute; top: 0; left: 50%; width: 0; height: 100%;
+            background: #ef4444;
+            transition: width .35s cubic-bezier(.23,1,.32,1),
+                        left   .35s cubic-bezier(.23,1,.32,1),
+                        opacity .35s ease;
+            opacity: .7;
+        }
+        .destructive-btn:hover .destructive-btn-line-red {
+            width: 100%; left: 0; opacity: 1;
+        }
         /* Sync indicator */
         .sync-badge{position:fixed;bottom:24px;right:24px;background:var(--glass-bg);backdrop-filter:blur(40px);border:1.5px solid var(--glass-border-light);border-radius:100px;padding:10px 18px;font-size:.82rem;font-weight:600;color:var(--accent);display:none;align-items:center;gap:8px;box-shadow:var(--glass-shadow);z-index:500;animation:fadeIn .3s ease}
         .sync-badge.show{display:flex}
@@ -3739,7 +3787,15 @@ function _renderAuthNav(user) {
                 <div class="auth-dropdown-email">${user.email}</div>
                 <div class="auth-dropdown-item" onclick="showPage('account');toggleUserDropdown()">👤 My Profile</div>
                 <div class="auth-dropdown-item" onclick="showPage('progress');toggleUserDropdown()">📊 My Progress</div>
-                <div class="auth-dropdown-item danger" onclick="signOut();toggleUserDropdown()">🚪 Sign Out</div>
+                <button class="destructive-btn" onclick="signOut();toggleUserDropdown()">
+                    <span class="destructive-btn-inner">
+                        <span class="destructive-btn-text">🚪 Sign Out</span>
+                        <span class="destructive-btn-line">
+                            <span class="destructive-btn-line-base"></span>
+                            <span class="destructive-btn-line-red"></span>
+                        </span>
+                    </span>
+                </button>
             </div>
         </div>`;
     // Sync to account page
