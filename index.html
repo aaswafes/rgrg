@@ -172,54 +172,101 @@ body {
 /* ══════════════════════════════════════════
    BUTTONS — Baseten-style fill-sweep
    ══════════════════════════════════════════ */
+/* ══ BUTTONS — Slat flip effect ══ */
 .btn {
   position: relative; display: inline-flex; align-items: center; gap: 8px;
   font-family: var(--font-mono); font-size: .78rem; font-weight: 500;
   letter-spacing: .06em; text-transform: uppercase;
   padding: 10px 20px; border: 1px solid transparent;
-  cursor: pointer; white-space: nowrap; overflow: hidden;
-  transition: color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
-  text-decoration: none;
+  cursor: pointer; white-space: nowrap;
+  text-decoration: none; outline: none;
+  /* no overflow here — slats handle it per-char */
 }
-.btn::before {
-  content: ''; position: absolute; inset: 0;
-  transform: translateY(101%); will-change: transform;
-  transition: transform var(--dur) var(--ease-out);
-}
-.btn:hover::before { transform: translateY(0); }
-.btn span { position: relative; z-index: 1; }
-.btn svg { position: relative; z-index: 1; transition: transform var(--dur) var(--ease-out); }
-.btn:hover svg { transform: translateX(3px); }
+.btn svg { transition: transform 250ms var(--ease-out); position: relative; z-index: 2; }
+.btn:hover svg { transform: translateX(4px); }
+.btn:active { transform: scale(0.98); }
 
+/* Slat text wrapper */
+.btn-slat {
+  display: inline-flex; overflow: hidden;
+  position: relative; z-index: 1;
+}
+.btn-slat-char {
+  position: relative; display: inline-flex;
+  align-items: center; justify-content: center;
+  overflow: hidden;
+}
+/* The hover-face slides in from top/bottom alternating */
+.btn-slat-char .slat-hover {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  transform: translateY(110%);
+  transition: transform 260ms var(--ease-spring);
+}
+.btn-slat-char:nth-child(even) .slat-hover { transform: translateY(-110%); }
+.btn:hover .btn-slat-char .slat-hover { transform: translateY(0) !important; }
+.btn-slat-char .slat-base {
+  transition: transform 260ms var(--ease-spring);
+}
+.btn:hover .btn-slat-char .slat-base { transform: translateY(-110%); }
+.btn:hover .btn-slat-char:nth-child(even) .slat-base { transform: translateY(110%); }
+
+/* Primary */
 .btn-primary {
   background: var(--text); color: var(--text-inv);
   border-color: var(--text);
+  transition: border-color 220ms, background 220ms, box-shadow 220ms;
 }
-.btn-primary::before { background: var(--accent); }
-.btn-primary:hover { color: var(--f0); border-color: var(--accent); }
+.btn-primary .slat-hover { color: var(--f0); background: var(--accent); left:0;right:0;top:0;bottom:0; }
+.btn-primary:hover { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,.18); }
 
+/* Outline */
 .btn-outline {
   background: var(--bg); color: var(--text);
   border-color: var(--border-dark);
+  transition: border-color 220ms, box-shadow 220ms;
 }
-.btn-outline::before { background: var(--bg-subtle); }
+.btn-outline .slat-hover { color: var(--text); background: var(--bg-subtle); left:0;right:0;top:0;bottom:0; }
 .btn-outline:hover { border-color: var(--text); }
 
+/* Ghost */
 .btn-ghost {
   background: transparent; color: var(--text-3);
   border-color: transparent; padding: 8px 14px;
+  transition: color 180ms, background 180ms;
 }
 .btn-ghost:hover { color: var(--text); background: var(--bg-subtle); }
 
+/* Danger */
 .btn-danger {
   background: transparent; color: var(--red);
   border-color: rgba(220,38,38,.3);
+  transition: border-color 180ms, background 180ms;
 }
-.btn-danger::before { background: rgba(220,38,38,.08); }
-.btn-danger:hover { border-color: var(--red); }
+.btn-danger:hover { border-color: var(--red); background: rgba(220,38,38,.06); }
 
-.btn-lg { padding: 14px 28px; font-size: .82rem; }
+.btn-lg { padding: 14px 28px; font-size: .82rem; letter-spacing: .08em; }
 .btn-sm { padding: 6px 14px; font-size: .72rem; }
+
+/* Magnetic button glow on hero buttons */
+.btn-hero-primary {
+  background: var(--text); color: var(--text-inv);
+  border: 1px solid var(--text);
+  transition: border-color 220ms, box-shadow 220ms;
+}
+.btn-hero-primary:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,70,229,.18), 0 8px 24px rgba(79,70,229,.22);
+}
+.btn-hero-primary .slat-hover { background: var(--accent); color: #fff; left:0;right:0;top:0;bottom:0; }
+
+.btn-hero-outline {
+  background: transparent; color: var(--text);
+  border: 1px solid var(--border-dark);
+  transition: border-color 220ms, box-shadow 220ms;
+}
+.btn-hero-outline:hover { border-color: var(--text); box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+.btn-hero-outline .slat-hover { background: var(--bg-subtle); color: var(--text); left:0;right:0;top:0;bottom:0; }
 
 /* ══════════════════════════════════════════
    NAVBAR
@@ -1441,13 +1488,490 @@ body {
 #match-mode { display: none; }
 #match-mode.active { display: block; }
 
+
+/* auth-nav-btn slat */
+.auth-nav-btn {
+  position: relative; overflow: visible;
+  transition: border-color 220ms, box-shadow 220ms;
+}
+.auth-nav-btn:hover {
+  border-color: var(--text);
+  box-shadow: 0 0 0 2px rgba(79,70,229,.10);
+}
+
+
+/* ── Dark mode hero extras ── */
+[data-theme="dark"] .hero-h1 em::after {
+  background: linear-gradient(90deg, #818cf8, #a5b4fc);
+}
+[data-theme="dark"] .hero-eyebrow-line {
+  background: linear-gradient(90deg, #818cf8, transparent);
+}
+
 a { text-decoration: none; color: inherit; }
 button { font-family: inherit; }
 input, textarea { font-family: inherit; }
+
+/* ══════════════════════════════════════════
+   HERO — Cinematic redesign
+   ══════════════════════════════════════════ */
+
+/* Animated noise grain overlay */
+.hero-section {
+  border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+  padding: 100px 0 0;
+  background: var(--bg);
+}
+.hero-section::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(79,70,229,.10) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 90% 50%, rgba(99,102,241,.07) 0%, transparent 60%);
+}
+[data-theme="dark"] .hero-section::before {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(79,70,229,.20) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 90% 50%, rgba(99,102,241,.12) 0%, transparent 60%);
+}
+
+/* Floating orbs */
+.hero-orb {
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 0;
+  filter: blur(80px); animation: orb-drift 12s ease-in-out infinite alternate;
+}
+.hero-orb-1 {
+  width: 500px; height: 500px; top: -120px; right: -100px;
+  background: radial-gradient(circle, rgba(79,70,229,.12) 0%, transparent 70%);
+  animation-duration: 14s;
+}
+.hero-orb-2 {
+  width: 350px; height: 350px; bottom: 0; left: -80px;
+  background: radial-gradient(circle, rgba(99,102,241,.08) 0%, transparent 70%);
+  animation-duration: 10s; animation-delay: -4s;
+}
+[data-theme="dark"] .hero-orb-1 { background: radial-gradient(circle, rgba(79,70,229,.25) 0%, transparent 70%); }
+[data-theme="dark"] .hero-orb-2 { background: radial-gradient(circle, rgba(99,102,241,.15) 0%, transparent 70%); }
+@keyframes orb-drift {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(30px, 20px) scale(1.08); }
+}
+
+.hero-section .container { position: relative; z-index: 1; }
+
+/* Hero eyebrow animate in */
+.hero-eyebrow {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 28px;
+  animation: fade-up .7s var(--ease-spring) .1s both;
+}
+.hero-eyebrow-line {
+  width: 32px; height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  animation: line-grow .8s var(--ease-spring) .3s both;
+  transform-origin: left;
+}
+@keyframes line-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* H1 with staggered word reveal */
+.hero-h1 {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6.5vw, 5.8rem);
+  font-weight: 700; letter-spacing: -0.045em;
+  line-height: 1.0; margin-bottom: 28px;
+  color: var(--text);
+  animation: fade-up .8s var(--ease-spring) .2s both;
+}
+.hero-h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--accent) 0%, #818cf8 50%, #a5b4fc 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative; display: inline-block;
+}
+/* Animated underline on em */
+.hero-h1 em::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -4px; height: 2px;
+  background: linear-gradient(90deg, var(--accent), #818cf8);
+  transform: scaleX(0); transform-origin: left;
+  animation: underline-in 1s var(--ease-spring) 1s both;
+}
+@keyframes underline-in { to { transform: scaleX(1); } }
+
+.hero-p {
+  font-size: 1.1rem; color: var(--text-3);
+  max-width: 50ch; line-height: 1.75; margin-bottom: 44px;
+  animation: fade-up .8s var(--ease-spring) .35s both;
+}
+
+.hero-actions {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  animation: fade-up .8s var(--ease-spring) .5s both;
+}
+
+/* Stats bar — stagger in */
+.hero-stats-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--border); margin-top: 72px;
+}
+.hero-stat {
+  padding: 28px 0; border-right: 1px solid var(--border);
+  text-align: center; position: relative; overflow: hidden;
+  cursor: default;
+  transition: background var(--dur) var(--ease-out);
+  animation: fade-up .6s var(--ease-spring) both;
+}
+.hero-stat:nth-child(1) { animation-delay: .6s; }
+.hero-stat:nth-child(2) { animation-delay: .7s; }
+.hero-stat:nth-child(3) { animation-delay: .8s; }
+.hero-stat:nth-child(4) { animation-delay: .9s; border-right: none; }
+.hero-stat::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--accent-light); opacity: 0;
+  transition: opacity var(--dur) var(--ease-out);
+}
+.hero-stat:hover::before { opacity: 1; }
+.hero-stat-num {
+  font-family: var(--font-display); font-size: 2.2rem; font-weight: 700;
+  letter-spacing: -0.04em; color: var(--text); margin-bottom: 4px;
+  position: relative; z-index: 1;
+  transition: color var(--dur);
+}
+.hero-stat:hover .hero-stat-num { color: var(--accent); }
+.hero-stat-label {
+  font-size: .72rem; color: var(--text-3); font-family: var(--font-mono);
+  text-transform: uppercase; letter-spacing: .08em; position: relative; z-index: 1;
+}
+
+/* ══ FADE-UP keyframe (shared) ══ */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ══════════════════════════════════════════
+   NAVBAR — Scroll-aware + link hover bars
+   ══════════════════════════════════════════ */
+.navbar {
+  transition: box-shadow .3s, background .3s, border-color .3s;
+}
+.navbar.scrolled {
+  box-shadow: 0 1px 20px rgba(0,0,0,.08);
+}
+[data-theme="dark"] .navbar.scrolled {
+  box-shadow: 0 1px 20px rgba(0,0,0,.4);
+}
+
+/* Nav logo hover spin */
+.nav-logo-icon {
+  transition: transform .4s var(--ease-spring), box-shadow .3s;
+}
+.nav-logo:hover .nav-logo-icon {
+  transform: rotate(-8deg) scale(1.08);
+  box-shadow: 0 0 0 6px rgba(79,70,229,.12);
+}
+
+/* Nav links — magnetic cursor reveal */
+.nav-link {
+  position: relative; overflow: hidden;
+}
+.nav-link::before {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: var(--accent); transform: scaleX(0); transform-origin: right;
+  transition: transform .3s var(--ease-out);
+}
+.nav-link::after { display: none; } /* remove old underline */
+.nav-link:hover::before { transform: scaleX(1); transform-origin: left; }
+.nav-link.active::before { transform: scaleX(1); }
+
+/* Nav icon btn — ripple */
+.nav-icon-btn { position: relative; overflow: hidden; }
+.nav-icon-btn::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  background: var(--accent); opacity: 0; transform: scale(0);
+  transition: transform .4s var(--ease-spring), opacity .4s;
+}
+.nav-icon-btn:active::after { opacity: .15; transform: scale(1.8); }
+
+/* ══════════════════════════════════════════
+   COURSE CARDS — Rich hover
+   ══════════════════════════════════════════ */
+.course-card {
+  transition: transform 300ms var(--ease-spring), box-shadow 300ms var(--ease-spring), border-color 200ms;
+}
+.course-card::after {
+  content: '→';
+  position: absolute; bottom: 16px; right: 16px;
+  font-family: var(--font-mono); font-size: .75rem; color: var(--text-3);
+  opacity: 0; transform: translateX(-6px);
+  transition: opacity 220ms, transform 220ms var(--ease-spring);
+}
+.course-card:hover::after { opacity: 1; transform: translateX(0); }
+
+/* card shimmer on hover */
+.course-card::before {
+  content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.06) 50%, rgba(255,255,255,0) 100%);
+  transform: translateX(-100%); transition: transform .5s var(--ease-out);
+}
+.course-card:hover::before { transform: translateX(100%); }
+
+/* ══════════════════════════════════════════
+   MODULE CARDS — hover lift + glow
+   ══════════════════════════════════════════ */
+.module-card {
+  transition: transform 280ms var(--ease-spring), box-shadow 280ms var(--ease-spring), border-color 180ms;
+}
+.module-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 28px rgba(79,70,229,.12), 0 4px 8px rgba(0,0,0,.06);
+}
+.module-icon { transition: transform .35s var(--ease-spring); display: inline-block; }
+.module-card:hover .module-icon { transform: scale(1.2) rotate(-5deg); }
+
+/* ══════════════════════════════════════════
+   CONTINUE CARDS — hover detail
+   ══════════════════════════════════════════ */
+.continue-card {
+  transition: transform 280ms var(--ease-spring), box-shadow 280ms, border-color 180ms;
+}
+.continue-card:hover { transform: translateY(-3px) scale(1.005); }
+.continue-icon { transition: transform .35s var(--ease-spring); }
+.continue-card:hover .continue-icon { transform: scale(1.15) rotate(-6deg); }
+
+/* ══════════════════════════════════════════
+   GOAL CARD — pulse ring
+   ══════════════════════════════════════════ */
+.goal-card {
+  transition: box-shadow 280ms, border-color 180ms;
+  animation: fade-up .6s var(--ease-spring) .1s both;
+}
+.goal-card:hover { box-shadow: 0 8px 24px rgba(79,70,229,.10); border-color: var(--accent); }
+.goal-circle-wrap svg .progress-ring {
+  animation: ring-fill 1.2s var(--ease-spring) .8s both;
+}
+@keyframes ring-fill {
+  from { stroke-dashoffset: 175.9; }
+  to   { stroke-dashoffset: 58.6; }
+}
+
+/* ══════════════════════════════════════════
+   ACHIEVEMENT CHIPS — hover pop
+   ══════════════════════════════════════════ */
+.achievement-chip {
+  transition: transform 220ms var(--ease-spring), box-shadow 220ms, border-color 180ms;
+  cursor: default;
+}
+.achievement-chip:hover {
+  transform: translateY(-2px) scale(1.04);
+  border-color: var(--accent); box-shadow: 0 4px 12px rgba(79,70,229,.12);
+}
+.achievement-chip .chip-icon { transition: transform .3s var(--ease-spring); }
+.achievement-chip:hover .chip-icon { transform: scale(1.3) rotate(-8deg); }
+
+/* ══════════════════════════════════════════
+   LEADERBOARD — row hover
+   ══════════════════════════════════════════ */
+.leaderboard-table tbody tr {
+  transition: background var(--dur);
+  cursor: default;
+}
+.leaderboard-table tbody tr:not(.is-me):hover { background: var(--bg-subtle); }
+.lb-user img { transition: transform .3s var(--ease-spring); }
+.leaderboard-table tbody tr:hover .lb-user img { transform: scale(1.1); }
+
+/* ══════════════════════════════════════════
+   SECTION HEADINGS — reveal on scroll (IntersectionObserver)
+   ══════════════════════════════════════════ */
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity .7s var(--ease-spring), transform .7s var(--ease-spring);
+}
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-delay-1 { transition-delay: .1s; }
+.reveal-delay-2 { transition-delay: .2s; }
+.reveal-delay-3 { transition-delay: .3s; }
+.reveal-delay-4 { transition-delay: .4s; }
+
+/* ══════════════════════════════════════════
+   TICKER BAR — gradient fade edges
+   ══════════════════════════════════════════ */
+.ticker-bar {
+  position: relative;
+}
+.ticker-bar::before, .ticker-bar::after {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 80px; z-index: 1;
+  pointer-events: none;
+}
+.ticker-bar::before { left: 0; background: linear-gradient(90deg, var(--f800), transparent); }
+.ticker-bar::after  { right: 0; background: linear-gradient(-90deg, var(--f800), transparent); }
+[data-theme="dark"] .ticker-bar::before { background: linear-gradient(90deg, var(--accent), transparent); }
+[data-theme="dark"] .ticker-bar::after  { background: linear-gradient(-90deg, var(--accent), transparent); }
+.ticker-track { animation: ticker 28s linear infinite; }
+.ticker-bar:hover .ticker-track { animation-play-state: paused; }
+
+/* ══════════════════════════════════════════
+   STAT BLOCKS (progress page) — count-up shimmer
+   ══════════════════════════════════════════ */
+.stat-block {
+  transition: transform 280ms var(--ease-spring), box-shadow 280ms;
+}
+.stat-block:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,.08);
+}
+.stat-block-num { transition: color .2s; }
+.stat-block:hover .stat-block-num { color: var(--accent); }
+
+/* ══════════════════════════════════════════
+   VOCAB SET CARDS
+   ══════════════════════════════════════════ */
+.vocab-set-card {
+  transition: transform 260ms var(--ease-spring), box-shadow 260ms, border-color 180ms;
+}
+.vocab-set-card:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(0,0,0,.08);
+}
+
+/* ══════════════════════════════════════════
+   TEAM + TESTIMONIAL CARDS
+   ══════════════════════════════════════════ */
+.team-card {
+  transition: transform 280ms var(--ease-spring), box-shadow 280ms;
+}
+.team-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0,0,0,.10);
+}
+.team-emoji { transition: transform .35s var(--ease-spring); display: inline-block; }
+.team-card:hover .team-emoji { transform: scale(1.2) rotate(-8deg); }
+
+.testimonial-card {
+  transition: transform 280ms var(--ease-spring), box-shadow 280ms, border-color 180ms;
+}
+.testimonial-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0,0,0,.09);
+  border-color: var(--border-dark);
+}
+
+/* ══════════════════════════════════════════
+   IMPACT CARDS (donate)
+   ══════════════════════════════════════════ */
+.impact-card {
+  transition: transform 260ms var(--ease-spring), box-shadow 260ms;
+}
+.impact-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(79,70,229,.10);
+  border-color: var(--accent);
+}
+.impact-num { transition: transform .3s var(--ease-spring); }
+.impact-card:hover .impact-num { transform: scale(1.05); }
+
+/* ══════════════════════════════════════════
+   AUTH MODAL — slide in
+   ══════════════════════════════════════════ */
+.auth-overlay { transition: opacity .25s; opacity: 0; }
+.auth-overlay.show { opacity: 1; }
+.auth-modal {
+  transform: translateY(24px) scale(.97);
+  transition: transform .35s var(--ease-spring), opacity .25s;
+  opacity: 0;
+}
+.auth-overlay.show .auth-modal {
+  transform: translateY(0) scale(1); opacity: 1;
+}
+
+/* ══════════════════════════════════════════
+   PAGE TRANSITIONS
+   ══════════════════════════════════════════ */
+.page { animation: pgIn .4s var(--ease-spring); }
+@keyframes pgIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ══════════════════════════════════════════
+   GRID LINES — animated reveal
+   ══════════════════════════════════════════ */
+.grid-lines {
+  animation: grid-reveal 2s var(--ease-out) .5s both;
+}
+@keyframes grid-reveal {
+  from { opacity: 0; }
+  to   { opacity: .25; }
+}
+[data-theme="dark"] .grid-lines {
+  animation: grid-reveal-dark 2s var(--ease-out) .5s both;
+}
+@keyframes grid-reveal-dark {
+  from { opacity: 0; }
+  to   { opacity: .12; }
+}
+
+/* ══════════════════════════════════════════
+   CURSOR GLOW (desktop only)
+   ══════════════════════════════════════════ */
+#cursor-glow {
+  position: fixed; width: 320px; height: 320px;
+  border-radius: 50%; pointer-events: none; z-index: 0;
+  background: radial-gradient(circle, rgba(79,70,229,.06) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: opacity .4s;
+  will-change: left, top;
+}
+[data-theme="dark"] #cursor-glow {
+  background: radial-gradient(circle, rgba(99,102,241,.10) 0%, transparent 70%);
+}
+
+/* ══════════════════════════════════════════
+   SECTION WRAP — stagger children
+   ══════════════════════════════════════════ */
+.section-heading { position: relative; display: inline-block; }
+.section-heading::after {
+  content: ''; position: absolute; left: 0; bottom: -4px; width: 32px; height: 2px;
+  background: var(--accent); border-radius: var(--r-pill);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .5s var(--ease-spring);
+}
+.reveal.visible .section-heading::after { transform: scaleX(1); transition-delay: .3s; }
+
+/* ══════════════════════════════════════════
+   DONATE FORM — amount hover  
+   ══════════════════════════════════════════ */
+.amount-btn {
+  transition: transform 200ms var(--ease-spring), box-shadow 200ms, background 180ms, border-color 180ms;
+}
+.amount-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,.08); }
+.amount-btn.active { transform: scale(1.03); box-shadow: 0 4px 14px rgba(79,70,229,.20); }
+
+/* ══════════════════════════════════════════
+   BACK BUTTON — animated arrow
+   ══════════════════════════════════════════ */
+.back-btn { transition: color .2s, gap .2s var(--ease-spring); gap: 6px; }
+.back-btn:hover { gap: 10px; }
+.back-btn::before { transition: transform .25s var(--ease-spring); display: inline-block; }
+.back-btn:hover::before { transform: translateX(-4px); }
+
+/* ══════════════════════════════════════════
+   PROGRESS BARS — animated fill
+   ══════════════════════════════════════════ */
+.progress-bar-fill {
+  transition: width 1s var(--ease-spring);
+}
+
 </style>
 </head>
 <body>
 <div class="grid-lines" aria-hidden="true"></div>
+<div id="cursor-glow" aria-hidden="true"></div>
 
 <!-- AUTH MODAL -->
 <div class="auth-overlay" id="auth-overlay" onclick="if(event.target===this)closeAuthModal()">
@@ -1568,7 +2092,7 @@ input, textarea { font-family: inherit; }
       <button class="nav-icon-btn" onclick="toggleSound()" title="Toggle Sound"><span id="sound-icon">🔊</span></button>
       <button class="nav-icon-btn" onclick="toggleTheme()" title="Toggle Theme"><span id="theme-icon">🌙</span></button>
       <div id="auth-nav-slot">
-        <button class="auth-nav-btn" onclick="openAuthModal()"><span>Sign In</span></button>
+        <button class="auth-nav-btn" onclick="openAuthModal()" data-slat="SIGN IN" data-slat-hover="LOG IN"><span class="btn-slat"></span></button>
       </div>
     </div>
   </div>
@@ -1621,6 +2145,8 @@ input, textarea { font-family: inherit; }
 <!-- ═══════ HOME ═══════ -->
 <div class="page active" id="page-home">
   <section class="hero-section">
+    <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
     <div class="container">
       <div class="hero-eyebrow">
         <div class="hero-eyebrow-line"></div>
@@ -1629,19 +2155,19 @@ input, textarea { font-family: inherit; }
       <h1 class="hero-h1">Learn Without<br><em>Limits.</em></h1>
       <p class="hero-p">Master IELTS, SAT, MCAT and more with interactive lessons, AI-powered practice, and personalized learning paths.</p>
       <div class="hero-actions">
-        <button class="btn btn-primary btn-lg" onclick="showPage('courses')">
-          <span>Explore Courses</span>
+        <button class="btn btn-hero-primary btn-lg" onclick="showPage('courses')" id="btn-explore">
+          <span class="btn-slat" id="slat-explore"></span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
-        <button class="btn btn-outline btn-lg" onclick="openAuthModal()">
-          <span>Sign Up Free</span>
+        <button class="btn btn-hero-outline btn-lg" onclick="openAuthModal()" id="btn-signup">
+          <span class="btn-slat" id="slat-signup"></span>
         </button>
       </div>
     </div>
     <div class="hero-stats-bar">
-      <div class="hero-stat"><div class="hero-stat-num">50K+</div><div class="hero-stat-label">Students</div></div>
-      <div class="hero-stat"><div class="hero-stat-num">500+</div><div class="hero-stat-label">Lessons</div></div>
-      <div class="hero-stat"><div class="hero-stat-num">95%</div><div class="hero-stat-label">Success Rate</div></div>
+      <div class="hero-stat"><div class="hero-stat-num" data-count="50000" data-suffix="K+">50K+</div><div class="hero-stat-label">Students</div></div>
+      <div class="hero-stat"><div class="hero-stat-num" data-count="500" data-suffix="+">500+</div><div class="hero-stat-label">Lessons</div></div>
+      <div class="hero-stat"><div class="hero-stat-num" data-count="95" data-suffix="%">95%</div><div class="hero-stat-label">Success Rate</div></div>
       <div class="hero-stat"><div class="hero-stat-num">4.9★</div><div class="hero-stat-label">Rating</div></div>
     </div>
   </section>
@@ -1665,7 +2191,7 @@ input, textarea { font-family: inherit; }
       </div>
 
       <!-- Continue Learning -->
-      <div class="section-header-row">
+      <div class="section-header-row reveal">
         <div>
           <div class="kicker" style="margin-bottom:8px">Pick Up Where You Left Off</div>
           <h2 class="section-heading">Continue Learning</h2>
@@ -1698,14 +2224,14 @@ input, textarea { font-family: inherit; }
         <div>
           <div class="section-header-row" style="margin-bottom:24px">
             <div>
-              <div class="kicker" style="margin-bottom:8px">Most Popular</div>
+              <div class="kicker reveal" style="margin-bottom:8px">Most Popular</div>
               <h2 class="section-heading" style="font-size:1.5rem">Featured Courses</h2>
             </div>
           </div>
           <div class="courses-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
-            <div class="course-card" onclick="showCoursePage('ielts')">
-              <div class="course-card-accent ielts"></div>
-              <div class="course-card-body">
+            <div class="course-card reveal" onclick="showCoursePage('ielts')">
+              <div class="course-card-accent ielts reveal reveal-delay-2"></div>
+              <div class="course-card-body reveal reveal-delay-3">
                 <div class="course-badge">⭐ Popular</div>
                 <div class="course-emoji">🎯</div>
                 <div class="course-title">IELTS Preparation</div>
@@ -1713,9 +2239,9 @@ input, textarea { font-family: inherit; }
                 <div class="course-meta"><span class="course-meta-tag">5 Modules</span><span class="course-meta-tag">4.9★</span><span class="course-meta-tag">12K students</span></div>
               </div>
             </div>
-            <div class="course-card" onclick="showCoursePage('sat')">
-              <div class="course-card-accent sat"></div>
-              <div class="course-card-body">
+            <div class="course-card reveal reveal-delay-4" onclick="showCoursePage('sat')">
+              <div class="course-card-accent sat reveal"></div>
+              <div class="course-card-body reveal reveal-delay-2">
                 <div class="course-badge">🚀 Trending</div>
                 <div class="course-emoji">📊</div>
                 <div class="course-title">SAT Preparation</div>
@@ -1723,9 +2249,9 @@ input, textarea { font-family: inherit; }
                 <div class="course-meta"><span class="course-meta-tag">3 Modules</span><span class="course-meta-tag">4.8★</span><span class="course-meta-tag">8K students</span></div>
               </div>
             </div>
-            <div class="course-card" onclick="showCoursePage('mcat')">
-              <div class="course-card-accent mcat"></div>
-              <div class="course-card-body">
+            <div class="course-card reveal reveal-delay-3" onclick="showCoursePage('mcat')">
+              <div class="course-card-accent mcat reveal reveal-delay-4"></div>
+              <div class="course-card-body reveal">
                 <div class="course-emoji">🧬</div>
                 <div class="course-title">MCAT Preparation</div>
                 <div class="course-desc">Medical college admission test prep.</div>
@@ -1738,11 +2264,11 @@ input, textarea { font-family: inherit; }
           <div style="margin-top:48px">
             <div class="kicker" style="margin-bottom:16px">Your Badges</div>
             <div class="achievements-grid">
-              <div class="achievement-chip"><span class="chip-icon">🔥</span> 7-Day Streak</div>
-              <div class="achievement-chip"><span class="chip-icon">⚡</span> Quick Learner</div>
-              <div class="achievement-chip"><span class="chip-icon">🎯</span> Perfect Score</div>
-              <div class="achievement-chip"><span class="chip-icon">📚</span> Bookworm</div>
-              <div class="achievement-chip"><span class="chip-icon">🏅</span> Course Master</div>
+              <div class="achievement-chip reveal"><span class="chip-icon">🔥</span> 7-Day Streak</div>
+              <div class="achievement-chip reveal"><span class="chip-icon">⚡</span> Quick Learner</div>
+              <div class="achievement-chip reveal"><span class="chip-icon">🎯</span> Perfect Score</div>
+              <div class="achievement-chip reveal"><span class="chip-icon">📚</span> Bookworm</div>
+              <div class="achievement-chip reveal"><span class="chip-icon">🏅</span> Course Master</div>
             </div>
           </div>
         </div>
@@ -1776,14 +2302,14 @@ input, textarea { font-family: inherit; }
       <h2 class="section-heading" style="margin-bottom:8px">All Courses</h2>
       <p class="section-sub" style="margin-bottom:40px">Choose your exam and start preparing with structured modules and exercises.</p>
       <div class="courses-grid">
-        <div class="course-card" onclick="showCoursePage('ielts')"><div class="course-card-accent ielts"></div><div class="course-card-body"><div class="course-emoji">🎯</div><div class="course-title">IELTS Preparation</div><div class="course-desc">5 modules with 15 exercises each (Easy, Medium, Hard).</div><div class="course-meta"><span class="course-meta-tag">5 Modules</span><span class="course-meta-tag">75 Exercises</span></div></div></div>
-        <div class="course-card" onclick="showCoursePage('sat')"><div class="course-card-accent sat"></div><div class="course-card-body"><div class="course-emoji">📊</div><div class="course-title">SAT Preparation</div><div class="course-desc">3 modules with graphing calculator support.</div><div class="course-meta"><span class="course-meta-tag">3 Modules</span><span class="course-meta-tag">Calculator</span></div></div></div>
-        <div class="course-card" onclick="showCoursePage('mcat')"><div class="course-card-accent mcat"></div><div class="course-card-body"><div class="course-emoji">🧬</div><div class="course-title">MCAT Preparation</div><div class="course-desc">Biology, Chemistry, Physics, and CARS sections.</div><div class="course-meta"><span class="course-meta-tag">4 Modules</span><span class="course-meta-tag">Science-based</span></div></div></div>
-        <div class="course-card" onclick="showCoursePage('alevel')"><div class="course-card-accent alevel"></div><div class="course-card-body"><div class="course-emoji">🎓</div><div class="course-title">A-Level Preparation</div><div class="course-desc">Mathematics, Physics, Chemistry, Biology, Economics, English.</div><div class="course-meta"><span class="course-meta-tag">6 Subjects</span><span class="course-meta-tag">90 Exercises</span></div></div></div>
-        <div class="course-card" onclick="showCoursePage('ib')"><div class="course-card-accent ib"></div><div class="course-card-body"><div class="course-emoji">🌍</div><div class="course-title">IB Diploma</div><div class="course-desc">All 6 subject groups plus TOK and Extended Essay.</div><div class="course-meta"><span class="course-meta-tag">6 Groups</span><span class="course-meta-tag">Extended Essay</span></div></div></div>
-        <div class="course-card" onclick="showCoursePage('igcse')"><div class="course-card-accent igcse"></div><div class="course-card-body"><div class="course-emoji">📘</div><div class="course-title">IGCSE Preparation</div><div class="course-desc">Core and extended curriculum for grades 9-10.</div><div class="course-meta"><span class="course-meta-tag">8 Subjects</span><span class="course-meta-tag">80 Exercises</span></div></div></div>
-        <div class="course-card" onclick="showCoursePage('dtm')"><div class="course-card-accent dtm"></div><div class="course-card-body"><div class="course-emoji">🇺🇿</div><div class="course-title">DTM Preparation</div><div class="course-desc">Mandatory subjects plus your specialty block.</div><div class="course-meta"><span class="course-meta-tag">5 Subjects</span><span class="course-meta-tag">100 Exercises</span></div></div></div>
-        <div class="course-card" onclick="showCoursePage('cefr')"><div class="course-card-accent cefr"></div><div class="course-card-body"><div class="course-emoji">🗣️</div><div class="course-title">CEFR English</div><div class="course-desc">From beginner (A1) to proficiency (C2) levels.</div><div class="course-meta"><span class="course-meta-tag">6 Levels</span><span class="course-meta-tag">120 Exercises</span></div></div></div>
+        <div class="course-card reveal reveal-delay-2" onclick="showCoursePage('ielts')"><div class="course-card-accent ielts reveal reveal-delay-3"></div><div class="course-card-body reveal reveal-delay-4"><div class="course-emoji">🎯</div><div class="course-title">IELTS Preparation</div><div class="course-desc">5 modules with 15 exercises each (Easy, Medium, Hard).</div><div class="course-meta"><span class="course-meta-tag">5 Modules</span><span class="course-meta-tag">75 Exercises</span></div></div></div>
+        <div class="course-card reveal" onclick="showCoursePage('sat')"><div class="course-card-accent sat reveal reveal-delay-2"></div><div class="course-card-body reveal reveal-delay-3"><div class="course-emoji">📊</div><div class="course-title">SAT Preparation</div><div class="course-desc">3 modules with graphing calculator support.</div><div class="course-meta"><span class="course-meta-tag">3 Modules</span><span class="course-meta-tag">Calculator</span></div></div></div>
+        <div class="course-card reveal reveal-delay-4" onclick="showCoursePage('mcat')"><div class="course-card-accent mcat reveal"></div><div class="course-card-body reveal reveal-delay-2"><div class="course-emoji">🧬</div><div class="course-title">MCAT Preparation</div><div class="course-desc">Biology, Chemistry, Physics, and CARS sections.</div><div class="course-meta"><span class="course-meta-tag">4 Modules</span><span class="course-meta-tag">Science-based</span></div></div></div>
+        <div class="course-card reveal reveal-delay-3" onclick="showCoursePage('alevel')"><div class="course-card-accent alevel reveal reveal-delay-4"></div><div class="course-card-body reveal"><div class="course-emoji">🎓</div><div class="course-title">A-Level Preparation</div><div class="course-desc">Mathematics, Physics, Chemistry, Biology, Economics, English.</div><div class="course-meta"><span class="course-meta-tag">6 Subjects</span><span class="course-meta-tag">90 Exercises</span></div></div></div>
+        <div class="course-card reveal reveal-delay-2" onclick="showCoursePage('ib')"><div class="course-card-accent ib reveal reveal-delay-3"></div><div class="course-card-body reveal reveal-delay-4"><div class="course-emoji">🌍</div><div class="course-title">IB Diploma</div><div class="course-desc">All 6 subject groups plus TOK and Extended Essay.</div><div class="course-meta"><span class="course-meta-tag">6 Groups</span><span class="course-meta-tag">Extended Essay</span></div></div></div>
+        <div class="course-card reveal" onclick="showCoursePage('igcse')"><div class="course-card-accent igcse reveal reveal-delay-2"></div><div class="course-card-body reveal reveal-delay-3"><div class="course-emoji">📘</div><div class="course-title">IGCSE Preparation</div><div class="course-desc">Core and extended curriculum for grades 9-10.</div><div class="course-meta"><span class="course-meta-tag">8 Subjects</span><span class="course-meta-tag">80 Exercises</span></div></div></div>
+        <div class="course-card reveal reveal-delay-4" onclick="showCoursePage('dtm')"><div class="course-card-accent dtm reveal"></div><div class="course-card-body reveal reveal-delay-2"><div class="course-emoji">🇺🇿</div><div class="course-title">DTM Preparation</div><div class="course-desc">Mandatory subjects plus your specialty block.</div><div class="course-meta"><span class="course-meta-tag">5 Subjects</span><span class="course-meta-tag">100 Exercises</span></div></div></div>
+        <div class="course-card reveal reveal-delay-3" onclick="showCoursePage('cefr')"><div class="course-card-accent cefr reveal reveal-delay-4"></div><div class="course-card-body reveal"><div class="course-emoji">🗣️</div><div class="course-title">CEFR English</div><div class="course-desc">From beginner (A1) to proficiency (C2) levels.</div><div class="course-meta"><span class="course-meta-tag">6 Levels</span><span class="course-meta-tag">120 Exercises</span></div></div></div>
       </div>
     </div>
   </section>
@@ -1799,11 +2325,11 @@ input, textarea { font-family: inherit; }
     </div>
     <div class="kicker" style="margin-bottom:20px">Course Modules</div>
     <div class="modules-grid">
-      <div class="module-card" onclick="showLesson('ielts','reading')"><div class="module-icon">📖</div><div class="module-name">Reading</div><div class="module-meta">Long passages · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('ielts','listening')"><div class="module-icon">🎧</div><div class="module-name">Listening</div><div class="module-meta">Note-taking · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('ielts','writing')"><div class="module-icon">✍️</div><div class="module-name">Writing</div><div class="module-meta">Task 1 &amp; 2 · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('ielts','speaking')"><div class="module-icon">🗣️</div><div class="module-name">Speaking</div><div class="module-meta">All parts · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('ielts','practice')"><div class="module-icon">📝</div><div class="module-name">Practice Tests</div><div class="module-meta">Full tests · 15 exercises</div></div>
+      <div class="module-card reveal" onclick="showLesson('ielts','reading')"><div class="module-icon">📖</div><div class="module-name">Reading</div><div class="module-meta">Long passages · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-1" onclick="showLesson('ielts','listening')"><div class="module-icon">🎧</div><div class="module-name">Listening</div><div class="module-meta">Note-taking · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-2" onclick="showLesson('ielts','writing')"><div class="module-icon">✍️</div><div class="module-name">Writing</div><div class="module-meta">Task 1 &amp; 2 · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-3" onclick="showLesson('ielts','speaking')"><div class="module-icon">🗣️</div><div class="module-name">Speaking</div><div class="module-meta">All parts · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('ielts','practice')"><div class="module-icon">📝</div><div class="module-name">Practice Tests</div><div class="module-meta">Full tests · 15 exercises</div></div>
     </div>
   </div>
 </div>
@@ -1817,9 +2343,9 @@ input, textarea { font-family: inherit; }
     </div>
     <div class="kicker" style="margin-bottom:20px">Course Modules</div>
     <div class="modules-grid">
-      <div class="module-card" onclick="showLesson('sat','english')"><div class="module-icon">📝</div><div class="module-name">English</div><div class="module-meta">Reading &amp; Writing · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('sat','math')"><div class="module-icon">🔢</div><div class="module-name">Math</div><div class="module-meta">Calculator enabled · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('sat','practice')"><div class="module-icon">📋</div><div class="module-name">Practice Tests</div><div class="module-meta">Full simulation · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('sat','english')"><div class="module-icon">📝</div><div class="module-name">English</div><div class="module-meta">Reading &amp; Writing · 15 exercises</div></div>
+      <div class="module-card reveal" onclick="showLesson('sat','math')"><div class="module-icon">🔢</div><div class="module-name">Math</div><div class="module-meta">Calculator enabled · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-1" onclick="showLesson('sat','practice')"><div class="module-icon">📋</div><div class="module-name">Practice Tests</div><div class="module-meta">Full simulation · 15 exercises</div></div>
     </div>
   </div>
 </div>
@@ -1833,11 +2359,11 @@ input, textarea { font-family: inherit; }
     </div>
     <div class="kicker" style="margin-bottom:20px">Course Modules</div>
     <div class="modules-grid">
-      <div class="module-card" onclick="showLesson('mcat','bio')"><div class="module-icon">🧫</div><div class="module-name">Biological Sciences</div><div class="module-meta">Biology &amp; Biochemistry · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('mcat','chem')"><div class="module-icon">⚗️</div><div class="module-name">Chemical Sciences</div><div class="module-meta">General &amp; Organic Chemistry · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('mcat','physics')"><div class="module-icon">⚡</div><div class="module-name">Physical Sciences</div><div class="module-meta">Physics fundamentals · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('mcat','cars')"><div class="module-icon">📖</div><div class="module-name">CARS</div><div class="module-meta">Critical Analysis · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('mcat','psych')"><div class="module-icon">🧠</div><div class="module-name">Psychology &amp; Sociology</div><div class="module-meta">Behavioral Sciences · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-2" onclick="showLesson('mcat','bio')"><div class="module-icon">🧫</div><div class="module-name">Biological Sciences</div><div class="module-meta">Biology &amp; Biochemistry · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-3" onclick="showLesson('mcat','chem')"><div class="module-icon">⚗️</div><div class="module-name">Chemical Sciences</div><div class="module-meta">General &amp; Organic Chemistry · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('mcat','physics')"><div class="module-icon">⚡</div><div class="module-name">Physical Sciences</div><div class="module-meta">Physics fundamentals · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('mcat','cars')"><div class="module-icon">📖</div><div class="module-name">CARS</div><div class="module-meta">Critical Analysis · 15 exercises</div></div>
+      <div class="module-card reveal" onclick="showLesson('mcat','psych')"><div class="module-icon">🧠</div><div class="module-name">Psychology &amp; Sociology</div><div class="module-meta">Behavioral Sciences · 15 exercises</div></div>
     </div>
   </div>
 </div>
@@ -1851,12 +2377,12 @@ input, textarea { font-family: inherit; }
     </div>
     <div class="kicker" style="margin-bottom:20px">Course Modules</div>
     <div class="modules-grid">
-      <div class="module-card" onclick="showLesson('alevel','math')"><div class="module-icon">📐</div><div class="module-name">Mathematics</div><div class="module-meta">Pure Math, Stats &amp; Mechanics · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('alevel','physics')"><div class="module-icon">⚛️</div><div class="module-name">Physics</div><div class="module-meta">Mechanics, Waves, Electricity · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('alevel','chemistry')"><div class="module-icon">🧪</div><div class="module-name">Chemistry</div><div class="module-meta">Organic, Inorganic &amp; Physical · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('alevel','biology')"><div class="module-icon">🌿</div><div class="module-name">Biology</div><div class="module-meta">Cell Biology, Genetics · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('alevel','economics')"><div class="module-icon">📈</div><div class="module-name">Economics</div><div class="module-meta">Micro &amp; Macroeconomics · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('alevel','english')"><div class="module-icon">📚</div><div class="module-name">English Literature</div><div class="module-meta">Poetry, Prose &amp; Drama · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-1" onclick="showLesson('alevel','math')"><div class="module-icon">📐</div><div class="module-name">Mathematics</div><div class="module-meta">Pure Math, Stats &amp; Mechanics · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-2" onclick="showLesson('alevel','physics')"><div class="module-icon">⚛️</div><div class="module-name">Physics</div><div class="module-meta">Mechanics, Waves, Electricity · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-3" onclick="showLesson('alevel','chemistry')"><div class="module-icon">🧪</div><div class="module-name">Chemistry</div><div class="module-meta">Organic, Inorganic &amp; Physical · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('alevel','biology')"><div class="module-icon">🌿</div><div class="module-name">Biology</div><div class="module-meta">Cell Biology, Genetics · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('alevel','economics')"><div class="module-icon">📈</div><div class="module-name">Economics</div><div class="module-meta">Micro &amp; Macroeconomics · 15 exercises</div></div>
+      <div class="module-card reveal" onclick="showLesson('alevel','english')"><div class="module-icon">📚</div><div class="module-name">English Literature</div><div class="module-meta">Poetry, Prose &amp; Drama · 15 exercises</div></div>
     </div>
   </div>
 </div>
@@ -1870,14 +2396,14 @@ input, textarea { font-family: inherit; }
     </div>
     <div class="kicker" style="margin-bottom:20px">Course Modules</div>
     <div class="modules-grid">
-      <div class="module-card" onclick="showLesson('ib','lang_lit')"><div class="module-icon">📖</div><div class="module-name">Language &amp; Literature</div><div class="module-meta">Group 1 · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('ib','lang_acq')"><div class="module-icon">🗣️</div><div class="module-name">Language Acquisition</div><div class="module-meta">Group 2 · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('ib','ind_soc')"><div class="module-icon">🌐</div><div class="module-name">Individuals &amp; Societies</div><div class="module-meta">Group 3 · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('ib','sciences')"><div class="module-icon">🔬</div><div class="module-name">Sciences</div><div class="module-meta">Group 4 · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('ib','math')"><div class="module-icon">📊</div><div class="module-name">Mathematics</div><div class="module-meta">Group 5 · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('ib','arts')"><div class="module-icon">🎨</div><div class="module-name">The Arts</div><div class="module-meta">Group 6 · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('ib','tok')"><div class="module-icon">💭</div><div class="module-name">Theory of Knowledge</div><div class="module-meta">Core · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('ib','ee')"><div class="module-icon">📝</div><div class="module-name">Extended Essay</div><div class="module-meta">Core · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-1" onclick="showLesson('ib','lang_lit')"><div class="module-icon">📖</div><div class="module-name">Language &amp; Literature</div><div class="module-meta">Group 1 · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-2" onclick="showLesson('ib','lang_acq')"><div class="module-icon">🗣️</div><div class="module-name">Language Acquisition</div><div class="module-meta">Group 2 · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-3" onclick="showLesson('ib','ind_soc')"><div class="module-icon">🌐</div><div class="module-name">Individuals &amp; Societies</div><div class="module-meta">Group 3 · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('ib','sciences')"><div class="module-icon">🔬</div><div class="module-name">Sciences</div><div class="module-meta">Group 4 · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('ib','math')"><div class="module-icon">📊</div><div class="module-name">Mathematics</div><div class="module-meta">Group 5 · 15 exercises</div></div>
+      <div class="module-card reveal" onclick="showLesson('ib','arts')"><div class="module-icon">🎨</div><div class="module-name">The Arts</div><div class="module-meta">Group 6 · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-1" onclick="showLesson('ib','tok')"><div class="module-icon">💭</div><div class="module-name">Theory of Knowledge</div><div class="module-meta">Core · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-2" onclick="showLesson('ib','ee')"><div class="module-icon">📝</div><div class="module-name">Extended Essay</div><div class="module-meta">Core · 15 exercises</div></div>
     </div>
   </div>
 </div>
@@ -1891,14 +2417,14 @@ input, textarea { font-family: inherit; }
     </div>
     <div class="kicker" style="margin-bottom:20px">Course Modules</div>
     <div class="modules-grid">
-      <div class="module-card" onclick="showLesson('igcse','math')"><div class="module-icon">🔢</div><div class="module-name">Mathematics</div><div class="module-meta">Core &amp; Extended · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('igcse','english')"><div class="module-icon">📚</div><div class="module-name">English Language</div><div class="module-meta">Reading, Writing · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('igcse','physics')"><div class="module-icon">⚡</div><div class="module-name">Physics</div><div class="module-meta">Core concepts · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('igcse','chemistry')"><div class="module-icon">⚗️</div><div class="module-name">Chemistry</div><div class="module-meta">Elements, Reactions · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('igcse','biology')"><div class="module-icon">🧬</div><div class="module-name">Biology</div><div class="module-meta">Life Sciences · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('igcse','economics')"><div class="module-icon">💰</div><div class="module-name">Economics</div><div class="module-meta">Basic principles · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('igcse','business')"><div class="module-icon">💼</div><div class="module-name">Business Studies</div><div class="module-meta">Operations &amp; Management · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('igcse','ict')"><div class="module-icon">💻</div><div class="module-name">ICT</div><div class="module-meta">Information Technology · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-3" onclick="showLesson('igcse','math')"><div class="module-icon">🔢</div><div class="module-name">Mathematics</div><div class="module-meta">Core &amp; Extended · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('igcse','english')"><div class="module-icon">📚</div><div class="module-name">English Language</div><div class="module-meta">Reading, Writing · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('igcse','physics')"><div class="module-icon">⚡</div><div class="module-name">Physics</div><div class="module-meta">Core concepts · 15 exercises</div></div>
+      <div class="module-card reveal" onclick="showLesson('igcse','chemistry')"><div class="module-icon">⚗️</div><div class="module-name">Chemistry</div><div class="module-meta">Elements, Reactions · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-1" onclick="showLesson('igcse','biology')"><div class="module-icon">🧬</div><div class="module-name">Biology</div><div class="module-meta">Life Sciences · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-2" onclick="showLesson('igcse','economics')"><div class="module-icon">💰</div><div class="module-name">Economics</div><div class="module-meta">Basic principles · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-3" onclick="showLesson('igcse','business')"><div class="module-icon">💼</div><div class="module-name">Business Studies</div><div class="module-meta">Operations &amp; Management · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('igcse','ict')"><div class="module-icon">💻</div><div class="module-name">ICT</div><div class="module-meta">Information Technology · 15 exercises</div></div>
     </div>
   </div>
 </div>
@@ -1912,13 +2438,13 @@ input, textarea { font-family: inherit; }
     </div>
     <div class="kicker" style="margin-bottom:20px">Course Modules</div>
     <div class="modules-grid">
-      <div class="module-card" onclick="showLesson('dtm','math')"><div class="module-icon">📐</div><div class="module-name">Matematika</div><div class="module-meta">Algebra, Geometriya · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('dtm','onatili')"><div class="module-icon">📝</div><div class="module-name">Ona Tili</div><div class="module-meta">Grammatika, Imlo · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('dtm','tarix')"><div class="module-icon">🏛️</div><div class="module-name">Tarix</div><div class="module-meta">O'zbekiston tarixi · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('dtm','fizika')"><div class="module-icon">⚛️</div><div class="module-name">Fizika</div><div class="module-meta">Mexanika, Elektr · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('dtm','kimyo')"><div class="module-icon">🧪</div><div class="module-name">Kimyo</div><div class="module-meta">Organik va Anorganik · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('dtm','biologiya')"><div class="module-icon">🌱</div><div class="module-name">Biologiya</div><div class="module-meta">Botanika, Zoologiya · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('dtm','ingliz')"><div class="module-icon">🌍</div><div class="module-name">Ingliz Tili</div><div class="module-meta">Grammar, Reading · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('dtm','math')"><div class="module-icon">📐</div><div class="module-name">Matematika</div><div class="module-meta">Algebra, Geometriya · 15 exercises</div></div>
+      <div class="module-card reveal" onclick="showLesson('dtm','onatili')"><div class="module-icon">📝</div><div class="module-name">Ona Tili</div><div class="module-meta">Grammatika, Imlo · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-1" onclick="showLesson('dtm','tarix')"><div class="module-icon">🏛️</div><div class="module-name">Tarix</div><div class="module-meta">O'zbekiston tarixi · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-2" onclick="showLesson('dtm','fizika')"><div class="module-icon">⚛️</div><div class="module-name">Fizika</div><div class="module-meta">Mexanika, Elektr · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-3" onclick="showLesson('dtm','kimyo')"><div class="module-icon">🧪</div><div class="module-name">Kimyo</div><div class="module-meta">Organik va Anorganik · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('dtm','biologiya')"><div class="module-icon">🌱</div><div class="module-name">Biologiya</div><div class="module-meta">Botanika, Zoologiya · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('dtm','ingliz')"><div class="module-icon">🌍</div><div class="module-name">Ingliz Tili</div><div class="module-meta">Grammar, Reading · 15 exercises</div></div>
     </div>
   </div>
 </div>
@@ -1932,12 +2458,12 @@ input, textarea { font-family: inherit; }
     </div>
     <div class="kicker" style="margin-bottom:20px">Course Modules</div>
     <div class="modules-grid">
-      <div class="module-card" onclick="showLesson('cefr','a1')"><div class="module-icon">🌱</div><div class="module-name">A1 — Beginner</div><div class="module-meta">Basic phrases · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('cefr','a2')"><div class="module-icon">🌿</div><div class="module-name">A2 — Elementary</div><div class="module-meta">Simple conversations · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('cefr','b1')"><div class="module-icon">🌳</div><div class="module-name">B1 — Intermediate</div><div class="module-meta">Independent communication · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('cefr','b2')"><div class="module-icon">🌲</div><div class="module-name">B2 — Upper Intermediate</div><div class="module-meta">Complex discussions · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('cefr','c1')"><div class="module-icon">🏔️</div><div class="module-name">C1 — Advanced</div><div class="module-meta">Fluent expression · 15 exercises</div></div>
-      <div class="module-card" onclick="showLesson('cefr','c2')"><div class="module-icon">⭐</div><div class="module-name">C2 — Proficiency</div><div class="module-meta">Near-native mastery · 15 exercises</div></div>
+      <div class="module-card reveal" onclick="showLesson('cefr','a1')"><div class="module-icon">🌱</div><div class="module-name">A1 — Beginner</div><div class="module-meta">Basic phrases · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-1" onclick="showLesson('cefr','a2')"><div class="module-icon">🌿</div><div class="module-name">A2 — Elementary</div><div class="module-meta">Simple conversations · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-2" onclick="showLesson('cefr','b1')"><div class="module-icon">🌳</div><div class="module-name">B1 — Intermediate</div><div class="module-meta">Independent communication · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-3" onclick="showLesson('cefr','b2')"><div class="module-icon">🌲</div><div class="module-name">B2 — Upper Intermediate</div><div class="module-meta">Complex discussions · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('cefr','c1')"><div class="module-icon">🏔️</div><div class="module-name">C1 — Advanced</div><div class="module-meta">Fluent expression · 15 exercises</div></div>
+      <div class="module-card reveal reveal-delay-4" onclick="showLesson('cefr','c2')"><div class="module-icon">⭐</div><div class="module-name">C2 — Proficiency</div><div class="module-meta">Near-native mastery · 15 exercises</div></div>
     </div>
   </div>
 </div>
@@ -2001,17 +2527,17 @@ input, textarea { font-family: inherit; }
       <h2 class="section-heading" style="margin-bottom:40px">My Progress</h2>
 
       <div class="progress-overview">
-        <div class="stat-block">
+        <div class="stat-block reveal">
           <div class="stat-block-num" id="stat-study-time">24h 35m</div>
           <div class="stat-block-label">Study Time</div>
           <div class="stat-block-delta">↑ 3h this week</div>
         </div>
-        <div class="stat-block">
+        <div class="stat-block reveal">
           <div class="stat-block-num" id="stat-lessons">47</div>
           <div class="stat-block-label">Lessons Completed</div>
           <div class="stat-block-delta">↑ 8 this week</div>
         </div>
-        <div class="stat-block">
+        <div class="stat-block reveal">
           <div class="stat-block-num">🔥 <span id="stat-streak">12</span></div>
           <div class="stat-block-label">Day Streak</div>
           <div class="stat-block-delta">Keep going!</div>
@@ -2251,18 +2777,18 @@ input, textarea { font-family: inherit; }
 
       <div class="kicker" style="margin-bottom:24px">Our Team</div>
       <div class="team-grid" style="margin-bottom:64px">
-        <div class="team-card"><div class="team-emoji">👨‍💻</div><div class="team-name">Humoyun Sodiqov</div><div class="team-role">CEO · IELTS 8.5 · SAT</div></div>
-        <div class="team-card"><div class="team-emoji">👩‍🏫</div><div class="team-name">Odiljonov Ibrohim</div><div class="team-role">Content · Former Yuksalish school student</div></div>
-        <div class="team-card"><div class="team-emoji">👨‍🔬</div><div class="team-name">Maxmarajabov Diyor</div><div class="team-role">CTO · Designer</div></div>
+        <div class="team-card reveal"><div class="team-emoji">👨‍💻</div><div class="team-name">Humoyun Sodiqov</div><div class="team-role">CEO · IELTS 8.5 · SAT</div></div>
+        <div class="team-card reveal"><div class="team-emoji">👩‍🏫</div><div class="team-name">Odiljonov Ibrohim</div><div class="team-role">Content · Former Yuksalish school student</div></div>
+        <div class="team-card reveal"><div class="team-emoji">👨‍🔬</div><div class="team-name">Maxmarajabov Diyor</div><div class="team-role">CTO · Designer</div></div>
       </div>
 
       <div class="kicker" style="margin-bottom:24px">Student Stories</div>
       <div class="testimonial-grid" style="margin-bottom:64px">
-        <div class="testimonial-card">
+        <div class="testimonial-card reveal">
           <div class="testimonial-text">"Thanks to BilimUp!, I improved my IELTS score from 5.5 to 7.5 in just 3 months. I'm now studying Computer Science at a university in Germany. This platform changed my life!"</div>
           <div class="testimonial-author"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jasmine" alt=""><div><div class="testimonial-author-name">Jasmine K.</div><div class="testimonial-author-sub">Tashkent → TU Munich</div></div></div>
         </div>
-        <div class="testimonial-card">
+        <div class="testimonial-card reveal">
           <div class="testimonial-text">"I come from a small village in Tajikistan. My family couldn't afford test prep courses. BilimUp! gave me the same quality education as students in big cities. I scored 1480 on my SAT!"</div>
           <div class="testimonial-author"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rustam" alt=""><div><div class="testimonial-author-name">Rustam A.</div><div class="testimonial-author-sub">Dushanbe → MIT</div></div></div>
         </div>
@@ -2282,9 +2808,9 @@ input, textarea { font-family: inherit; }
       </div>
 
       <div class="impact-grid">
-        <div class="impact-card"><div class="impact-num">50,000+</div><div class="impact-label">Students Helped</div></div>
-        <div class="impact-card"><div class="impact-num">500+</div><div class="impact-label">Free Lessons</div></div>
-        <div class="impact-card"><div class="impact-num">100%</div><div class="impact-label">Free Forever</div></div>
+        <div class="impact-card reveal"><div class="impact-num">50,000+</div><div class="impact-label">Students Helped</div></div>
+        <div class="impact-card reveal"><div class="impact-num">500+</div><div class="impact-label">Free Lessons</div></div>
+        <div class="impact-card reveal"><div class="impact-num">100%</div><div class="impact-label">Free Forever</div></div>
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;margin-bottom:64px" class="donate-layout">
@@ -4065,7 +4591,7 @@ function _renderAuthNav(user) {
     const slot = document.getElementById('auth-nav-slot');
     if (!slot) return;
     if (!user) {
-        slot.innerHTML = `<button class="auth-nav-btn" onclick="openAuthModal()"><span>Sign In</span></button>`;
+        slot.innerHTML = `<button class="auth-nav-btn" onclick="openAuthModal()" data-slat="SIGN IN" data-slat-hover="LOG IN"><span class="btn-slat"></span></button>`;
         return;
     }
     const name   = user.user_metadata?.display_name || user.user_metadata?.full_name || user.email.split('@')[0];
@@ -4436,7 +4962,157 @@ function loginWithTelegram(msgId) {
         }
     }, 1000);
 }
+
+// ════════════════════════════════════════
+//  SLAT BUTTON BUILDER
+// ════════════════════════════════════════
+function buildSlatBtn(slotId, text, hoverText) {
+    const el = document.getElementById(slotId);
+    if (!el) return;
+    while (hoverText.length < text.length) hoverText += ' ';
+    hoverText = hoverText.substring(0, text.length);
+    el.innerHTML = text.split('').map((ch, i) => {
+        const hCh = hoverText[i] || ' ';
+        return '<span class="btn-slat-char"><span class="slat-base">' + (ch===' '?'&nbsp;':ch) + '</span><span class="slat-hover">' + (hCh===' '?'&nbsp;':hCh) + '</span></span>';
+    }).join('');
+}
+
+// ════════════════════════════════════════
+//  SLAT AUTO INIT (data-slat attribute)
+// ════════════════════════════════════════
+function initSlatBtns() {
+    document.querySelectorAll('[data-slat]').forEach(function(el) {
+        var text  = el.dataset.slat;
+        var hover = el.dataset.slatHover || text;
+        var slot  = el.querySelector('.btn-slat');
+        if (!slot) return;
+        while (hover.length < text.length) hover += ' ';
+        hover = hover.substring(0, text.length);
+        slot.innerHTML = text.split('').map(function(ch, i) {
+            var hCh = hover[i] || ' ';
+            return '<span class="btn-slat-char"><span class="slat-base">' + (ch===' '?'&nbsp;':ch) + '</span><span class="slat-hover">' + (hCh===' '?'&nbsp;':hCh) + '</span></span>';
+        }).join('');
+    });
+}
+
+// ════════════════════════════════════════
+//  CURSOR GLOW
+// ════════════════════════════════════════
+(function() {
+    var glow = document.getElementById('cursor-glow');
+    if (!glow || window.matchMedia('(pointer:coarse)').matches) {
+        if (glow) glow.style.display = 'none'; return;
+    }
+    var mx=window.innerWidth/2, my=window.innerHeight/2, cx=mx, cy=my;
+    document.addEventListener('mousemove', function(e) { mx=e.clientX; my=e.clientY; });
+    function tick() {
+        cx += (mx - cx) * .1;
+        cy += (my - cy) * .1;
+        glow.style.left = cx + 'px';
+        glow.style.top  = cy + 'px';
+        requestAnimationFrame(tick);
+    }
+    tick();
+})();
+
+// ════════════════════════════════════════
+//  SCROLL-AWARE NAVBAR
+// ════════════════════════════════════════
+(function() {
+    var nav = document.querySelector('.navbar');
+    if (!nav) return;
+    function onScroll() { nav.classList.toggle('scrolled', window.scrollY > 10); }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+})();
+
+// ════════════════════════════════════════
+//  INTERSECTION OBSERVER — reveal on scroll
+// ════════════════════════════════════════
+(function() {
+    var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e, i) {
+            if (e.isIntersecting) {
+                setTimeout(function() { e.target.classList.add('visible'); }, i * 60);
+                io.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    function attachReveal() {
+        document.querySelectorAll('.reveal').forEach(function(el) { io.observe(el); });
+    }
+
+    var origShowPage = window.showPage;
+    if (origShowPage) {
+        window.showPage = function(p) {
+            origShowPage(p);
+            setTimeout(attachReveal, 100);
+        };
+    }
+    setTimeout(attachReveal, 400);
+})();
+
+// ════════════════════════════════════════
+//  COUNTER ANIMATION
+// ════════════════════════════════════════
+function animateCounter(el, target, suffix, duration) {
+    var start = performance.now();
+    function frame(now) {
+        var p = Math.min((now - start) / duration, 1);
+        var ease = 1 - Math.pow(1 - p, 3);
+        var val = Math.round(ease * target);
+        el.textContent = (target >= 1000 ? Math.round(val/1000) + 'K' : val) + (suffix || '');
+        if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+}
+function initCounters() {
+    document.querySelectorAll('[data-count]').forEach(function(el) {
+        var io2 = new IntersectionObserver(function(entries) {
+            if (entries[0].isIntersecting) {
+                var target = +el.dataset.count;
+                var suffix = el.dataset.suffix || '';
+                animateCounter(el, target, suffix, 1600);
+                io2.disconnect();
+            }
+        }, { threshold: 0.5 });
+        io2.observe(el);
+    });
+}
+
+// ════════════════════════════════════════
+//  MAGNETIC HERO BUTTONS
+// ════════════════════════════════════════
+function addMagnetic(el) {
+    if (!el) return;
+    el.addEventListener('mousemove', function(e) {
+        var r = this.getBoundingClientRect();
+        var x = (e.clientX - r.left - r.width/2)  * .15;
+        var y = (e.clientY - r.top  - r.height/2) * .15;
+        this.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+    });
+    el.addEventListener('mouseleave', function() {
+        this.style.transform = '';
+        this.style.transition = 'transform .4s cubic-bezier(.23,1,.32,1)';
+        setTimeout(function() { el.style.transition = ''; }, 400);
+    });
+}
+
+// ════════════════════════════════════════
+//  DOM READY INIT
+// ════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+    buildSlatBtn('slat-explore', 'EXPLORE COURSES', 'START LEARNING');
+    buildSlatBtn('slat-signup',  'SIGN UP FREE',    'JOIN 50K+ NOW!');
+    initSlatBtns();
+    initCounters();
+    setTimeout(function() {
+        addMagnetic(document.getElementById('btn-explore'));
+        addMagnetic(document.getElementById('btn-signup'));
+    }, 300);
+});
+
 </script>
 
-
-</body></html></body></html>
+</body></html>
